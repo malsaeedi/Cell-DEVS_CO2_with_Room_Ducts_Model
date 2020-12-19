@@ -1,0 +1,72 @@
+{
+  "scenario": {
+    "default_delay": "transport",
+    "default_cell_type": "country",
+    "default_state": 0,
+    "default_vicinity": -1,
+    "default_config": {
+      "country": 1,
+      "small_country": "Hola"
+    }
+  },
+  "cells": [
+    {
+      "cell_id": "Spain",
+      "state": 1,
+      "config": 4,
+      "default_vicinity": -2,
+      "neighborhood": [
+        {
+          "cell_id": "Portugal",
+          "vicinity": 7
+        },
+        {
+          "cell_id": "France",
+          "vicinity": 5
+        },
+        {
+          "cell_id": "Andorra"
+        }
+      ]
+    },
+    {
+      "cell_id": "Portugal",
+      "delay": "inertial",
+      "neighborhood": [
+        {
+          "cell_id": "Spain",
+          "vicinity": 7
+        }
+      ]
+    },
+    {
+      "cell_id": "Andorra",
+      "state": 2,
+      "cell_type": "small_country",
+      "config": "Adios",
+      "neighborhood": [
+        {
+          "cell_id": "Spain",
+          "vicinity": 1
+        },
+        {
+          "cell_id": "France",
+          "vicinity": 1
+        }
+      ]
+    },
+    {
+      "cell_id": "France",
+      "state": 3,
+      "neighborhood": [
+        {
+          "cell_id": "Spain",
+          "vicinity": 2
+        },
+        {
+          "cell_id": "Andorra"
+        }
+      ]
+    }
+  ]
+}
