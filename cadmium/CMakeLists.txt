@@ -1,31 +1,26 @@
 cmake_minimum_required(VERSION 3.6.1)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version")
-project(Cadmium)
-# The version number.
-set(Cadmium_VERSION_MAJOR 0)
-set(Cadmium_VERSION_MINOR 2)
-set(Cadmium_VERSION_PATCH 5)
+project(
+    cadmium
+    VERSION 0.2.8)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
-
-set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 include(CheckCXXCompilerFlag)
 IF (CMAKE_BUILD_TYPE MATCHES Debug)
     message("debug mode")
-    IF (NOT UNIX)  # This produces hundreds of warnings in Mac (cannot merge previous GCDA file: corrupt arc tag)
+    IF (NOT WIN32)
         include(CodeCoverage)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ftest-coverage -fprofile-arcs")
     ENDIF ()
 ENDIF (CMAKE_BUILD_TYPE MATCHES Debug)
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS unit_test_framework system thread REQUIRED)
+find_package(Boost 1.56.0 COMPONENTS unit_test_framework system thread REQUIRED)
 
-add_library(Cadmium INTERFACE)
+add_library(cadmium INTERFACE)
 
 include_directories(include ${Boost_INCLUDE_DIRS})
-add_subdirectory(json)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
 
@@ -45,7 +40,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 #Enabling instrumentation for profiling if required
 option(PROFILER_ENABLED "Profiler-enabled" OFF)
 if (PROFILER_ENABLED)
-    message(STATUS "Instrumenting profiling")
+    message(STATUS "Intrumenting profiling")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate")
 endif ()
 
@@ -104,25 +99,39 @@ foreach (exec_type ${EXEC_TYPES})
     endforeach (testCmpFailSrc)
 endforeach (exec_type)
 
-# PDEVS Examples
-FILE(GLOB Examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/pdevs/main-*.cpp)
+# Examples
+FILE(GLOB Examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/main-*.cpp)
 foreach (exampleSrc ${Examples})
     get_filename_component(exampleName ${exampleSrc} NAME_WE)
     add_executable(${exampleName} ${exampleSrc})
     target_link_libraries(${exampleName} PUBLIC ${Boost_LIBRARIES})
 endforeach (exampleSrc)
 
-# Cell-DEVS Examples
-FILE(GLOB Examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/celldevs/*/main_*.cpp)
-foreach (exampleSrc ${Examples})
-    get_filename_component(exampleName ${exampleSrc} NAME_WE)
-    add_executable(${exampleName} ${exampleSrc})
-    target_link_libraries(${exampleName} PUBLIC ${Boost_LIBRARIES})
-endforeach (exampleSrc)
+include(GNUInstallDirs)
 
-#Library Headers
-add_executable(cadmium_headers include)
-set_target_properties(cadmium_headers PROPERTIES
-        EXCLUDE_FROM_ALL TRUE
-        EXCLUDE_FROM_DEFAULT_BUILD TRUE
-        LINKER_LANGUAGE CXX)
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/cadmium/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cadmium)
+
+#CMake packaging to allow other projects to include cadmium
+include(CMakePackageConfigHelpers)
+
+
+message("packaging cadmium to be consumed")
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cadmiumConfig.cmake.in
+    ${CMAKE_BINARY_DIR}/cadmiumConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cadmium)
+
+write_basic_package_version_file(
+    ${CMAKE_BINARY_DIR}/cadmiumConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+install(
+    FILES
+    ${CMAKE_BINARY_DIR}/cadmiumConfig.cmake
+    ${CMAKE_BINARY_DIR}/cadmiumConfigVersion.cmake
+    DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}/cmake/cadmium)
+
