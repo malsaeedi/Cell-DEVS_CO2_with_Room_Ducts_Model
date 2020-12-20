@@ -11,6 +11,6 @@ git submodule update --init --recursive
 
 cd cadmium
 
-git submodule update --init --recursive
-
 git checkout celldevs-jason-performance-improvement
+
+git submodule update --init --recursive
