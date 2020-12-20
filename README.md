@@ -5,8 +5,10 @@
 
 git clone https://github.com/malsaeedi/Cell-DEVS_CO2_with_Room_Ducts_Model.git
 
+cd Cell-DEVS_CO2_with_Room_Ducts_Model/
+
 git submodule update --init --recursive
 
-cd Cell-DEVS_CO2_with_Room_Ducts_Model/cadmium
+cd cadmium
 
 git checkout celldevs-jason-performance-improvement
