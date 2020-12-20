@@ -1,7 +1,7 @@
 # Cell-DEVS_CO2_with_Room_Ducts_Model
 
 
-#####To clone the Term Project:####
+#####To clone the Term Project Simulation:####
 
 git clone https://github.com/malsaeedi/Cell-DEVS_CO2_with_Room_Ducts_Model.git
 
